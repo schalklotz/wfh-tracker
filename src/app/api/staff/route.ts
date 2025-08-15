@@ -5,6 +5,11 @@ import { CreateStaffSchema } from "@/lib/validations"
 export async function GET() {
   try {
     const staff = await prisma.staff.findMany({
+      include: {
+        _count: {
+          select: { entries: true }
+        }
+      },
       orderBy: { fullName: 'asc' }
     })
     return NextResponse.json(staff)

@@ -2,10 +2,18 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { CreateReasonSchema } from "@/lib/validations"
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url)
+    const includeAll = searchParams.get('includeAll') === 'true'
+
     const reasons = await prisma.reason.findMany({
-      where: { isActive: true },
+      where: includeAll ? {} : { isActive: true },
+      include: {
+        _count: {
+          select: { entries: true }
+        }
+      },
       orderBy: { name: 'asc' }
     })
     return NextResponse.json(reasons)
