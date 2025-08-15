@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-
 import { prisma } from "@/lib/db"
-
 import { UpdateWfhEntrySchema } from "@/lib/validations"
 
 export async function PUT(
@@ -9,14 +7,10 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-        { status: 401 }
-      )
-    }
-
     const body = await request.json()
     const validatedData = UpdateWfhEntrySchema.parse(body)
 
-    // Check if user can edit this entry
+    // Check if entry exists
     const existingEntry = await prisma.wfhEntry.findUnique({
       where: { id: params.id },
       include: { staff: true }
@@ -26,14 +20,6 @@ export async function PUT(
       return NextResponse.json(
         { error: "Entry not found" },
         { status: 404 }
-      )
-    }
-
-    // Users can only edit their own entries unless they're admin
-    if (session.user.role !== "ADMIN" && existingEntry.createdBy !== session.user.id) {
-      return NextResponse.json(
-        { error: "Forbidden" },
-        { status: 403 }
       )
     }
 
@@ -63,11 +49,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-        { status: 401 }
-      )
-    }
-
-    // Check if user can delete this entry
+    // Check if entry exists
     const existingEntry = await prisma.wfhEntry.findUnique({
       where: { id: params.id }
     })
@@ -76,14 +58,6 @@ export async function DELETE(
       return NextResponse.json(
         { error: "Entry not found" },
         { status: 404 }
-      )
-    }
-
-    // Users can only delete their own entries unless they're admin
-    if (session.user.role !== "ADMIN" && existingEntry.createdBy !== session.user.id) {
-      return NextResponse.json(
-        { error: "Forbidden" },
-        { status: 403 }
       )
     }
 

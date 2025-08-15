@@ -9,9 +9,13 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-        { status: 401 }
-      )
-    }
+    // TODO: Add authentication check
+    // if (!session) {
+    //   return NextResponse.json(
+    //     { error: "Unauthorized" },
+    //     { status: 401 }
+    //   )
+    // }
 
     const body = await request.json()
     const validatedData = UpdateStaffSchema.parse(body)
@@ -35,9 +39,13 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-        { status: 401 }
-      )
-    }
+    // TODO: Add authentication check
+    // if (!session) {
+    //   return NextResponse.json(
+    //     { error: "Unauthorized" },
+    //     { status: 401 }
+    //   )
+    // }
 
     await prisma.staff.delete({
       where: { id: params.id }

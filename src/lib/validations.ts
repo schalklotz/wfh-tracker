@@ -1,19 +1,24 @@
 import { z } from "zod"
 
-export const CreateWfhEntrySchema = z.object({
+const BaseWfhEntrySchema = z.object({
   staffId: z.string().min(1, "Staff member is required"),
   reasonId: z.string().optional(),
   freeTextReason: z.string().optional(),
   date: z.string().min(1, "Date is required"),
   hours: z.number().optional(),
   notes: z.string().optional(),
-}).refine((data) => data.reasonId || data.freeTextReason, {
+})
+
+export const CreateWfhEntrySchema = BaseWfhEntrySchema.refine((data) => data.reasonId || data.freeTextReason, {
   message: "Either a reason or free text reason is required",
   path: ["reasonId"]
 })
 
-export const UpdateWfhEntrySchema = CreateWfhEntrySchema.extend({
+export const UpdateWfhEntrySchema = BaseWfhEntrySchema.extend({
   id: z.string()
+}).refine((data) => data.reasonId || data.freeTextReason, {
+  message: "Either a reason or free text reason is required",
+  path: ["reasonId"]
 })
 
 export const CreateStaffSchema = z.object({
